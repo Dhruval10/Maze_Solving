@@ -1,14 +1,16 @@
 public_findDistance :- 
-        write('% public_findDistance'),nl,
+        nl,
+        write('Find Distance:'),nl,
 	findall(L, findDistance(L), Out), 
 	write(Out), nl.
 
-public_solve :- 
-        write('% public_solve'),nl,
-	findall(true, solve, Out), 
-	write(Out), nl.
+%public_solve :- 
+%    nl,
+%    write('Solve: '),nl,
+%	findall(true, solve, Out), 
+%	write(Out), nl.
 
-maze(4,0,3,0,0).
+maze(4,0,3,3,3).
 cell(0,0,[d],[0.391538986557049]).
 cell(1,0,[r,d],[16.597130417636, 0.889878639213553]).
 cell(2,0,[l,d],[0.011123208182191, 18.6496954092342]).
