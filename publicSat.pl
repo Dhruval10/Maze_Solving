@@ -1,5 +1,6 @@
+
 % Uncomment following line to automatically include logic.pl
-:- initialization(['logic.pl']).
+% :- initialization(['logic.pl']).
 
 testSat([]).
 testSat([F|T]) :- 
@@ -11,7 +12,8 @@ testSat([F|T]) :-
 	testSat(T). 
 
 public_sat :- 
-    writeln('% public_sat'),
+    nl,
+    writeln('Sat '),
 	formulaList(F),
 	testSat(F).
 
