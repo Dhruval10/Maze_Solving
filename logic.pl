@@ -72,7 +72,7 @@ statsHelp([[X|[Y]]|Tl],U, L, R, D) :- cell(X,Y,Dirs,Wt),
 								(contains1(l,Dirs) -> L1 is 1; L1 is 0),
 								(contains1(r,Dirs) -> R1 is 1; R1 is 0),
 								statsHelp(Tl,U2, L2, R2, D2),
-								
+
 								U is U1 + U2,
 								D is D1 + D2,
 								R is R1 + R2,
@@ -88,7 +88,6 @@ validPath(N,W) :- maze(Size,_,_,_,_),
 	 			 path(Name,Sx,Sy,Dir),
 	 			 validPathHelp(N,W3,Sx, Sy, Dir, Name),
 	 			 round4(W3,W).
-
 
 validPathHelp(N,0,Sx,Sy,[],Name) :- N = Name.
 validPathHelp(N,W,X, Y, [F|Tl], Name) :- cell(X,Y,Dcell,Whd),
@@ -122,7 +121,7 @@ findDistance(L) :- maze(_,X,Y,_,_),
                    start(L2,[],R,Z),
 
                    finish(R,Z,L9),
-                   	sort(L9,L).
+                   sort(L9,L).
 
 start([[D,[[X,Y]]] | Tl],[], R, L) :- append([[D,[[X,Y]]]],[],L), R = Tl.
 
@@ -178,102 +177,3 @@ getCord1(X,Y,F,Cx,Cy) :- (F = u -> Cy is Y - 1, Cx is X);
 							 (F = l -> Cx is X - 1, Cy is Y);
 							 (F = r -> Cx is X + 1, Cy is Y).
 
-%%%%%%%%%%%%%%%%
-% Part 3 - SAT %
-%%%%%%%%%%%%%%%%
-
-% eval(F,A,R) - R is t if formula F evaluated with list of 
-%                 true variables A is true, false otherwise
-
-eval(F,A,R) :- (evalVal(F,A) -> R = t; R = f).
-
-evalT([X,B|C],[B]).
-
-evalVal(t,Lst).
-evalVal(Var, Lst) :- member(Var,Lst).
-evalVal([Var], Lst) :- member(Var, Lst).
-evalVal([and,X,Y|Tl], Lst):- evalVal(X,Lst),
-							evalVal(Y,Lst).
-evalVal([no,X|Tl], Lst) :- !,\+(evalVal(X,Lst)).
-evalVal([or,X,Y|Tl], Lst) :- (evalVal(X,Lst); evalVal(Y,Lst)).
-evalVal([every,V,F],Lst) :- (!,\+member(V,Lst) -> evalVal(F,Lst),
-	                                              append([V],Lst,Lst1),
-	                                               evalVal(F,Lst1); evalVal(F,Lst),
-	                                               remover(Lst,V,Nlst),
-	                                               evalVal(F,Nlst)).	 
-evalVal([exists,V,F],Lst) :- (!,\+member(V,Lst) -> (evalVal(F,Lst);
-	                                              append([V],Lst,Lst1),
-	                                               evalVal(F,Lst1)); 
-
-	                                               (evalVal(F,Lst);
-	                                               remover(Lst,V,Nlst),
-	                                               evalVal(F,Nlst))).
-
-remover([],Z,[]) :- !. 
-remover([X|T],X,L1) :- !, remover(T,X,L1).         
-remover([H|T],X,[H|L1]) :- remover(T,X,L1).
-
-
-% varsOf(F,R) - R is list of free variables in formula F
-
-
-varsOf(F,R) :- varsOfHelper([], F, R1),
-				R2 = [],
-				!,find(R1,[],R2, R3),
-				sort(R3,R).
-
-find([], C, R, R).
-find(R,C,R,R) :- 3=5.
-find([Hd|Tl], C, R, R2) :- (\+member(Hd,C) -> append([Hd], C, C1), append([Hd],R, R1), find(Tl, C1, R1, R2);
-	find(Tl, C, R, R2)).
-
-varsOfHelper(F,[],R).
-varsOfHelper(F, [t|Tl], R) :- R = [].
-varsOfHelper(F, [f|Tl] ,R) :- R = [].
-varsOfHelper(F, f ,R) :- R = [].
-varsOfHelper(F, t ,R) :- R = [].
-varsOfHelper(F, [and,X,Y|Tl], R) :- 
-									 varsOfHelper(F,X, R1),
-									 varsOfHelper(F,Y,R2),
-									 append(R2,R1,R).
-
-varsOfHelper(F, [or,X,Y|Tl], R) :- 
-									 varsOfHelper(F,X, R1),
-									 varsOfHelper(F,Y,R2),
-									 append(R2,R1,R).
-
-
-varsOfHelper(F, [no,X|Tl],R) :- varsOfHelper(F,X, R).
-varsOfHelper(F,[every,X|Tl], R) :- append([X],F, F1),
-								flat(Tl,J),
-								varsOfHelper(F1,J, R).
-varsOfHelper(F,[exists,X|Tl], R) :- append([X],F, F1),
-								flat(Tl,J),
-								varsOfHelper(F1,J, R).
-
-varsOfHelper(F,[V], R) :-  (member(V,F) -> R = []; R = [V]).
-
-varsOfHelper(F,V, R) :-    (member(V,F) -> R = []; R = [V]).
-
-
-my_rev(X,F) :- rev_helper(X,[],F).
-
-rev_helper([],A,A).
-rev_helper([H|T],A,F) :- 
-	rev_helper(T,[H|A],F).
-
-ehelp(F, R) :- evalVal(F,[]), R = [].
-
-
-% sat(F,R) - R is a list of true variables that satisfies F
-
-sat(F,R) :- varsOf(F, V),
-			subset(V, R),
-			eval(F,R,t).
-
-% Helper Function
-% subset(L, R) - R is a subset of list L, with relative order preserved
-
-subset([], []).
-subset([H|T], [H|NewT]) :- subset(T, NewT).
-subset([_|T], NewT) :- subset(T, NewT).
