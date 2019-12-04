@@ -11,7 +11,7 @@ run_f(Func) :-
     % writef("Testcase: %s\n",[FunName]),
     Func.
 
-testcases(
+function(
     [ public_prod
     , public_fill
     , public_genN
@@ -23,5 +23,5 @@ testcases(
     ]).
 
 run :-
-    testcases(TC),
+    function(TC),
     maplist(run_f,TC).
