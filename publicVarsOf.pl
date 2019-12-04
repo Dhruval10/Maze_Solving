@@ -1,4 +1,6 @@
-:- initialization(['logic.pl']).
+
+% Uncomment following line to automatically include logic.pl
+% :- initialization(['logic.pl']).
 
 testVarsOf([]).
 testVarsOf([F|T]) :- 
@@ -10,10 +12,11 @@ testVarsOf([F|T]) :-
 	testVarsOf(T). 
 
 public_varsOf :- 
-    writeln('% public_varsOf'),
+    nl,
+    writeln('Vars Of'),
 	formulaList(L),
 	testVarsOf(L).
 
-formulaList([t,f,x,[and, x, y],[or, y, x],[no, x]]).
+formulaList([t,f,[and, x, y],[or, y, x],[no, x]]).
 
 assignmentList([[],[x]]).
